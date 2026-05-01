@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>宿舍管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/layui@2.8.17/dist/css/layui.css">
+    <style>
+        body {
+            background-color: #f2f2f2;
+        }
+        .layui-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .layui-header .layui-logo {
+            color: #fff;
+            font-size: 20px;
+            font-weight: 600;
+        }
+        .layui-header .layui-nav .layui-nav-item a {
+            color: #fff;
+        }
+        .layui-header .layui-nav .layui-nav-item a:hover {
+            color: #fff;
+            background: rgba(255,255,255,0.1);
+        }
+        .layui-side {
+            background-color: #393D49;
+        }
+        .layui-side .layui-nav {
+            background-color: #393D49;
+        }
+        .layui-body {
+            left: 200px;
+            padding: 15px;
+        }
+        .layui-card {
+            margin-bottom: 15px;
+        }
+        .stat-card {
+            text-align: center;
+            padding: 20px;
+        }
+        .stat-card .stat-number {
+            font-size: 36px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: #999;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">宿舍管理系统</div>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a href="javascript:;"><i class="layui-icon layui-icon-user"></i> <span id="userName">用户</span></a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="javascript:;" id="btnLogout">退出登录</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <ul class="layui-nav layui-nav-tree" lay-filter="nav">
+                    <li class="layui-nav-item layui-this">
+                        <a href="javascript:;" data-url="/"><i class="layui-icon layui-icon-home"></i> 首页</a>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-username"></i> 用户管理</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="/user">用户列表</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-home"></i> 楼宇管理</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="/building">楼宇列表</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-home"></i> 房间管理</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="/room">房间列表</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-util"></i> 维修申请</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="/repair">申请列表</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-rmb"></i> 账单管理</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="/bill">账单列表</a></dd>
+                            <dd><a href="javascript:;" data-url="/account">记账记录</a></dd>
+                        </dl>
+                    </li>
+                    <li class="layui-nav-item">
+                        <a href="javascript:;"><i class="layui-icon layui-icon-username"></i> 宿舍分配</a>
+                        <dl class="layui-nav-child">
+                            <dd><a href="javascript:;" data-url="/allocation">分配记录</a></dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="layui-body" id="mainContent">
+            <div class="layui-row">
+                <div class="layui-col-md3">
+                    <div class="layui-card stat-card">
+                        <div class="stat-number" id="statUsers">0</div>
+                        <div class="stat-label">总用户数</div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="layui-card stat-card">
+                        <div class="stat-number" id="statBuildings">0</div>
+                        <div class="stat-label">楼宇总数</div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="layui-card stat-card">
+                        <div class="stat-number" id="statRooms">0</div>
+                        <div class="stat-label">房间总数</div>
+                    </div>
+                </div>
+                <div class="layui-col-md3">
+                    <div class="layui-card stat-card">
+                        <div class="stat-number" id="statRepairs">0</div>
+                        <div class="stat-label">待处理维修</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layui-row">
+                <div class="layui-col-md12">
+                    <div class="layui-card">
+                        <div class="layui-card-header">系统功能介绍</div>
+                        <div class="layui-card-body">
+                            <div class="layui-text">
+                                <p><strong>宿舍管理系统</strong>是一个基于SpringBoot + Layui框架开发的B/S架构系统，主要功能包括：</p>
+                                <ul>
+                                    <li><strong>用户管理</strong>：支持学生、宿管、后勤三类用户，不同用户拥有不同操作权限</li>
+                                    <li><strong>楼宇管理</strong>：管理楼宇信息，包括楼宇名称、编号、楼层数等</li>
+                                    <li><strong>房间管理</strong>：管理房间信息，支持房间状态管理和床位分配</li>
+                                    <li><strong>维修申请</strong>：学生可提交维修申请，后勤人员可处理维修任务</li>
+                                    <li><strong>宿舍分配</strong>：支持人性化的宿舍分配，包括智能分配、手动分配、调宿和退宿</li>
+                                    <li><strong>账单管理</strong>：可视化的账单管理，支持账单创建、支付等功能</li>
+                                    <li><strong>记账管理</strong>：支持收支记录的添加和统计分析</li>
+                                    <li><strong>Excel导入</strong>：支持Excel文件上传后批量导入用户、楼宇、房间数据</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="layui-footer" style="text-align: center;">
+            © 2024 宿舍管理系统 - Dormitory Management System
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/layui@2.8.17/dist/layui.js"></script>
+    <script>
+        layui.use(['element', 'layer', 'jquery'], function(){
+            var element = layui.element;
+            var layer = layui.layer;
+            var $ = layui.$;
+            
+            function getCurrentUser() {
+                $.ajax({
+                    url: '/api/user/current',
+                    type: 'GET',
+                    success: function(res) {
+                        if(res.code === 0 && res.data) {
+                            $('#userName').text(res.data.realName || res.data.username);
+                        }
+                    }
+                });
+            }
+            
+            $('#btnLogout').on('click', function() {
+                layer.confirm('确定要退出登录吗？', function(index) {
+                    $.ajax({
+                        url: '/api/logout',
+                        type: 'POST',
+                        success: function(res) {
+                            if(res.code === 0) {
+                                layer.msg('退出成功', {icon: 1}, function() {
+                                    window.location.href = '/login';
+                                });
+                            } else {
+                                layer.msg(res.message, {icon: 2});
+                            }
+                        }
+                    });
+                    layer.close(index);
+                });
+            });
+            
+            element.on('nav(nav)', function(elem) {
+                var url = elem.data('url');
+                if(url && url !== '/') {
+                    $('.layui-nav-item').removeClass('layui-this');
+                    elem.parents('.layui-nav-item').addClass('layui-this');
+                    elem.parent().addClass('layui-this');
+                    
+                    loadContent(url);
+                }
+            });
+            
+            function loadContent(url) {
+                var index = layer.load(1, {
+                    shade: [0.1, '#fff']
+                });
+                
+                $('#mainContent').load(url + ' #mainContent > *', function(response, status, xhr) {
+                    layer.close(index);
+                    if(status === 'error') {
+                        layer.msg('页面加载失败', {icon: 2});
+                    }
+                });
+            }
+            
+            getCurrentUser();
+        });
+    </script>
+</body>
+</html>
